@@ -38,7 +38,7 @@
       padding: 22px;
     }
 
-    .shell {
+    .app {
       width: 100%;
       max-width: 1180px;
       border-radius: 32px;
@@ -541,7 +541,7 @@
     /* RESPONSIVE */
 
     @media (max-width: 950px) {
-      .shell {
+      .app {
         grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.4fr);
       }
     }
@@ -550,7 +550,7 @@
       body {
         padding: 12px;
       }
-      .shell {
+      .app {
         grid-template-columns: 1fr;
         border-radius: 26px;
       }
@@ -581,12 +581,11 @@
   </style>
 </head>
 <body>
-  <div class="shell">
+  <div class="app">
     <!-- LEFT SIDE -->
-    <section class="left">
-      <header class="brand-row">
-        <div class="brand-logo">G2
-        </div>
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-logo">G2</div>
         <div class="brand-text">
           <h1>GREYSTONE G2</h1>
           <p>Guest Experience Portal</p>
