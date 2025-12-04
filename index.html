@@ -668,4 +668,358 @@
           </div>
           <span class="badge-soft">Tap a section or type to filter</span>
         </div>
-      </header
+      </header>
+
+      <!-- MAIN TABS -->
+      <nav class="tab-row" id="mainTabs"></nav>
+
+      <!-- CONTENT + MAP -->
+      <div class="cards-area">
+        <!-- LEFT: text content -->
+        <article class="panel">
+          <header class="panel-header">
+            <div class="panel-title">
+              <span id="panelIcon">👋</span>
+              <span id="panelTitle">Welcome & Overview</span>
+            </div>
+            <span class="pill-small" id="panelTag">Start here</span>
+          </header>
+          <div class="panel-body" id="panelBody"></div>
+          <footer class="panel-footer">
+            <span id="panelUpdated">Last updated: —</span>
+            <span>Greystone G2 · Victoria Island</span>
+          </footer>
+        </article>
+
+        <!-- RIGHT: Google map & nearby recommendations -->
+        <article class="panel">
+          <header class="panel-header">
+            <div class="panel-title">
+              <span>🗺️</span>
+              <span>Nearby recommendations</span>
+            </div>
+            <span class="pill-small">Google Maps embed</span>
+          </header>
+
+          <div class="panel-body" style="max-height:none;">
+            <div class="map-type-row" id="mapTabs">
+              <button class="map-pill active" data-type="food">🍽️ Food</button>
+              <button class="map-pill" data-type="bars">🍸 Bars & Lounge</button>
+              <button class="map-pill" data-type="activities">🎡 Activities & Sightseeing</button>
+              <button class="map-pill" data-type="travel">✈️ Travel agencies</button>
+            </div>
+
+            <!-- Uses q=...&output=embed so it works without API key -->
+            <iframe
+              id="mapFrame"
+              class="map-frame"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              src=""
+            ></iframe>
+
+            <p class="map-note">
+              Tip: tap a category above to explore places close to
+              <b>Victoria Island, Lagos</b>. Zoom in and tap a place to open it
+              directly in Google Maps.
+            </p>
+          </div>
+        </article>
+      </div>
+    </section>
+  </div>
+
+  <!-- ========= DATA + LOGIC ========= -->
+  <script>
+    const SECTIONS = [
+      {
+        id: "welcome",
+        title: "Welcome & Overview",
+        tag: "Start here",
+        icon: "👋",
+        updated: "2025-10-20",
+        keywords: "welcome overview intro apartment greystone g2",
+        html: `
+          <p>
+            Welcome to <b>Greystone G2 Apartment</b>, your modern base in the
+            heart of Victoria Island. This digital manual gives you quick access
+            to everything you might need during your stay.
+          </p>
+          <ul class="list">
+            <li>Self check-in with smart lock — details in the Check-in section.</li>
+            <li>Premium queen bed, fast Wi-Fi and inverter backup for essentials.</li>
+            <li>Walking distance to cafes, lounges and business hubs.</li>
+          </ul>
+          <div class="two-col-list">
+            <div>
+              <div class="bullet-title">Ideal for</div>
+              <p>Business travel, couples, short city breaks.</p>
+            </div>
+            <div>
+              <div class="bullet-title">Neighbourhood vibe</div>
+              <p>Safe, central, upscale and close to the ocean.</p>
+            </div>
+          </div>
+        `,
+      },
+      {
+        id: "aptInfo",
+        title: "Apartment information",
+        tag: "Space & amenities",
+        icon: "🏡",
+        updated: "2025-10-20",
+        keywords: "apartment info amenities layout bedroom living kitchen balcony",
+        html: `
+          <p>
+            Greystone G2 is a fully serviced one-bedroom apartment with a bright
+            living room, work-friendly desk and a cosy bedroom.
+          </p>
+          <div class="two-col-list">
+            <div>
+              <div class="bullet-title">Living room</div>
+              <p>Smart TV, comfortable sofa, reading lamp.</p>
+            </div>
+            <div>
+              <div class="bullet-title">Bedroom</div>
+              <p>Queen bed, blackout curtains, AC, wardrobe.</p>
+            </div>
+            <div>
+              <div class="bullet-title">Kitchen</div>
+              <p>Fridge, microwave, cooker, kettle, cookware & dishes.</p>
+            </div>
+            <div>
+              <div class="bullet-title">Extras</div>
+              <p>Iron & board, washing machine, complimentary water & tea.</p>
+            </div>
+          </div>
+        `,
+      },
+      {
+        id: "wifi",
+        title: "Wi-Fi & internet",
+        tag: "Stay connected",
+        icon: "📶",
+        updated: "2025-10-20",
+        keywords: "wifi internet password network",
+        html: `
+          <p>Unlimited fibre internet is available throughout the apartment.</p>
+          <div class="wifi-grid">
+            <div class="wifi-card">
+              <div class="wifi-label">Wi-Fi name (SSID)</div>
+              <div class="wifi-value">
+                <code id="wifiName">Greystone_G2_5G</code>
+                <button class="btn-copy" data-copy-target="wifiName">Copy</button>
+              </div>
+            </div>
+            <div class="wifi-card">
+              <div class="wifi-label">Password</div>
+              <div class="wifi-value">
+                <code id="wifiPassword">StayAtG2@2025</code>
+                <button class="btn-copy" data-copy-target="wifiPassword">Copy</button>
+              </div>
+            </div>
+          </div>
+          <ul class="list">
+            <li>Best speed near the living room and workspace desk.</li>
+            <li>Please avoid very heavy downloads during important calls.</li>
+          </ul>
+        `,
+      },
+      {
+        id: "houseRules",
+        title: "House rules",
+        tag: "Please read",
+        icon: "📜",
+        updated: "2025-10-20",
+        keywords: "rules smoking visitors noise quiet hours",
+        html: `
+          <ul class="list">
+            <li><b>No smoking</b> inside. You may use the balcony with the door closed.</li>
+            <li>No parties or events — this is a quiet residential building.</li>
+            <li>Quiet hours: <b>10:00 PM – 7:00 AM</b>.</li>
+            <li>Only registered guests may stay overnight.</li>
+            <li>Please report any damage immediately so we can repair quickly.</li>
+          </ul>
+        `,
+      },
+      {
+        id: "checkin",
+        title: "Check-in instructions",
+        tag: "Arrival",
+        icon: "🔑",
+        updated: "2025-10-20",
+        keywords: "check in arrival code gate smart lock security",
+        html: `
+          <ol class="list">
+            <li>Arrive at <b>6B Ogalade Close, Victoria Island</b> and tell security you're staying in <b>Greystone G2</b>.</li>
+            <li>At the apartment door, enter the smart-lock code: <b>2859 ✔</b>.</li>
+            <li>Once inside, the physical keys are on the wall hook by the entrance.</li>
+            <li>Wi-Fi and AC remotes are placed on the TV console & bedside table.</li>
+          </ol>
+          <p>If you have any trouble, call or WhatsApp your host using the buttons on the left.</p>
+        `,
+      },
+      {
+        id: "checkout",
+        title: "Check-out instructions",
+        tag: "Departure",
+        icon: "🧳",
+        updated: "2025-10-20",
+        keywords: "check out departure leaving cleaning key",
+        html: `
+          <ol class="list">
+            <li>Check-out time is <b>11:00 AM</b> unless we agreed otherwise.</li>
+            <li>Wash dishes or start a quick dishwasher cycle if available.</li>
+            <li>Place used towels in the laundry basket.</li>
+            <li>Switch off ACs, lights, TV and water heater.</li>
+            <li>Lock the door and scramble the smart-lock digits.</li>
+          </ol>
+          <p>Please send a quick message when you leave so we can schedule cleaning.</p>
+        `,
+      },
+      {
+        id: "appliances",
+        title: "Appliances & utilities",
+        tag: "How things work",
+        icon: "⚙️",
+        updated: "2025-10-20",
+        keywords: "appliances AC heater washing machine power outage",
+        html: `
+          <ul class="list">
+            <li><b>AC units:</b> Use the labelled remotes. For comfort and efficiency, keep between 23–25°C.</li>
+            <li><b>Water heater:</b> Switch is near the bathroom door. Turn off after use.</li>
+            <li><b>Washing machine:</b> Quick-wash is usually enough for light loads (30–40 minutes).</li>
+            <li><b>Power backup:</b> Inverter keeps lights & Wi-Fi running during short outages.</li>
+          </ul>
+        `,
+      },
+      {
+        id: "safety",
+        title: "Safety & emergency",
+        tag: "Important",
+        icon: "🚨",
+        updated: "2025-10-20",
+        keywords: "safety emergency fire police hospital",
+        html: `
+          <ul class="list">
+            <li>Emergency number in Nigeria: <b>112</b>.</li>
+            <li>First-aid kit: bathroom cabinet.</li>
+            <li>Fire extinguisher: by the kitchen entrance.</li>
+            <li>If needed, move outside, alert security and call emergency services.</li>
+          </ul>
+        `,
+      },
+    ];
+
+    // Simple embed links that should render without API key
+    const MAP_URLS = {
+      food:
+        "https://www.google.com/maps?q=restaurants+near+Victoria+Island+Lagos&output=embed",
+      bars:
+        "https://www.google.com/maps?q=bars+and+lounges+near+Victoria+Island+Lagos&output=embed",
+      activities:
+        "https://www.google.com/maps?q=sightseeing+near+Victoria+Island+Lagos&output=embed",
+      travel:
+        "https://www.google.com/maps?q=travel+agencies+near+Victoria+Island+Lagos&output=embed",
+    };
+
+    const mainTabs = document.getElementById("mainTabs");
+    const panelIcon = document.getElementById("panelIcon");
+    const panelTitle = document.getElementById("panelTitle");
+    const panelTag = document.getElementById("panelTag");
+    const panelBody = document.getElementById("panelBody");
+    const panelUpdated = document.getElementById("panelUpdated");
+    const searchInput = document.getElementById("searchInput");
+    const mapTabs = document.getElementById("mapTabs");
+    const mapFrame = document.getElementById("mapFrame");
+
+    let activeSectionId = "welcome";
+
+    function renderMainTabs() {
+      mainTabs.innerHTML = "";
+      SECTIONS.forEach((section) => {
+        const btn = document.createElement("button");
+        btn.className =
+          "tab-btn" + (section.id === activeSectionId ? " active" : "");
+        btn.dataset.id = section.id;
+        btn.innerHTML = `
+          <span class="icon">${section.icon}</span>
+          <span>${section.title}</span>
+        `;
+        btn.addEventListener("click", () => {
+          activeSectionId = section.id;
+          searchInput.value = "";
+          renderMainTabs();
+          renderActiveSection();
+        });
+        mainTabs.appendChild(btn);
+      });
+    }
+
+    function renderActiveSection() {
+      const query = searchInput.value.trim().toLowerCase();
+      let section = SECTIONS.find((s) => s.id === activeSectionId);
+      if (!section) section = SECTIONS[0];
+
+      if (query) {
+        const filtered = SECTIONS.filter((s) => {
+          const text =
+            (s.title + " " + s.tag + " " + s.keywords + " " + s.html)
+              .replace(/<[^>]+>/g, " ")
+              .toLowerCase();
+          return text.includes(query);
+        });
+        if (filtered.length) section = filtered[0];
+      }
+
+      panelIcon.textContent = section.icon;
+      panelTitle.textContent = section.title;
+      panelTag.textContent = section.tag;
+      panelBody.innerHTML = section.html;
+      panelUpdated.textContent = "Last updated: " + section.updated;
+
+      attachCopyButtons();
+    }
+
+    function attachCopyButtons() {
+      document.querySelectorAll(".btn-copy").forEach((btn) => {
+        btn.onclick = () => {
+          const id = btn.dataset.copyTarget;
+          const el = document.getElementById(id);
+          if (!el) return;
+          const text = el.textContent.trim();
+          navigator.clipboard
+            .writeText(text)
+            .then(() => {
+              const original = btn.textContent;
+              btn.textContent = "Copied!";
+              setTimeout(() => (btn.textContent = original), 1200);
+            })
+            .catch(() => alert("Copy failed. Please copy manually: " + text));
+        };
+      });
+    }
+
+    searchInput.addEventListener("input", () => {
+      renderActiveSection();
+    });
+
+    function setMapType(type) {
+      document.querySelectorAll(".map-pill").forEach((pill) => {
+        pill.classList.toggle("active", pill.dataset.type === type);
+      });
+      mapFrame.src = MAP_URLS[type] || MAP_URLS.food;
+    }
+
+    mapTabs.querySelectorAll(".map-pill").forEach((pill) => {
+      pill.addEventListener("click", () => {
+        setMapType(pill.dataset.type);
+      });
+    });
+
+    renderMainTabs();
+    renderActiveSection();
+    setMapType("food");
+  </script>
+</body>
+</html>
