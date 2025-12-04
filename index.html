@@ -521,10 +521,106 @@
       width: 100%;
       border-radius: 16px;
       border: none;
-      min-height: 245px;
+      min-height: 205px;
+      margin-top: 8px;
     }
 
     .map-note {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .rec-list {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .rec-card {
+      border-radius: 14px;
+      border: 1px solid rgba(15, 23, 42, 0.06);
+      background: #f9fafb;
+      padding: 8px 10px;
+      font-size: 12px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+      gap: 4px 10px;
+      align-items: center;
+    }
+
+    .rec-name {
+      font-weight: 600;
+      font-size: 12px;
+    }
+
+    .rec-meta {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .rec-meta span {
+      margin-right: 8px;
+    }
+
+    .rec-action {
+      text-align: right;
+    }
+
+    .btn-small-link {
+      font-size: 11px;
+      text-decoration: none;
+      color: var(--secondary);
+    }
+
+    /* Feedback form */
+
+    .feedback-form {
+      display: grid;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .feedback-row {
+      display: grid;
+      gap: 4px;
+    }
+
+    .feedback-row label {
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .feedback-row input,
+    .feedback-row textarea,
+    .feedback-row select {
+      border-radius: 10px;
+      border: 1px solid rgba(15, 23, 42, 0.14);
+      padding: 7px 9px;
+      font-size: 13px;
+      font-family: inherit;
+      outline: none;
+    }
+
+    .feedback-row textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+
+    .btn-primary {
+      border: none;
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--primary), #199264);
+      color: #f9fafb;
+      justify-self: flex-start;
+    }
+
+    .feedback-note {
       font-size: 11px;
       color: var(--muted);
       margin-top: 4px;
@@ -698,7 +794,7 @@
               <span>🗺️</span>
               <span>Nearby recommendations</span>
             </div>
-            <span class="pill-small">Google Maps embed</span>
+            <span class="pill-small">Curated around Victoria Island</span>
           </header>
 
           <div class="panel-body" style="max-height:none;">
@@ -708,6 +804,8 @@
               <button class="map-pill" data-type="activities">🎡 Activities & Sightseeing</button>
               <button class="map-pill" data-type="travel">✈️ Travel agencies</button>
             </div>
+
+            <div class="rec-list" id="recList"></div>
 
             <!-- Uses q=...&output=embed so it works without API key -->
             <iframe
@@ -719,9 +817,8 @@
             ></iframe>
 
             <p class="map-note">
-              Tip: tap a category above to explore places close to
-              <b>Victoria Island, Lagos</b>. Zoom in and tap a place to open it
-              directly in Google Maps.
+              Times and ratings are approximate. Tap “Open in Maps” to get live
+              directions from your current location.
             </p>
           </div>
         </article>
@@ -731,6 +828,8 @@
 
   <!-- ========= DATA + LOGIC ========= -->
   <script>
+    /* -------- CONTENT SECTIONS (LEFT PANEL) -------- */
+
     const SECTIONS = [
       {
         id: "welcome",
@@ -765,14 +864,15 @@
       {
         id: "aptInfo",
         title: "Apartment information",
-        tag: "Space & amenities",
+        tag: "Space, Wi-Fi & rules",
         icon: "🏡",
         updated: "2025-10-20",
-        keywords: "apartment info amenities layout bedroom living kitchen balcony",
+        keywords:
+          "apartment info amenities layout bedroom living kitchen balcony wifi rules check in check out",
         html: `
           <p>
             Greystone G2 is a fully serviced one-bedroom apartment with a bright
-            living room, work-friendly desk and a cosy bedroom.
+            living area, work-friendly desk and a cosy bedroom.
           </p>
           <div class="two-col-list">
             <div>
@@ -792,53 +892,46 @@
               <p>Iron & board, washing machine, complimentary water & tea.</p>
             </div>
           </div>
-        `,
-      },
-      {
-        id: "wifi",
-        title: "Wi-Fi & internet",
-        tag: "Stay connected",
-        icon: "📶",
-        updated: "2025-10-20",
-        keywords: "wifi internet password network",
-        html: `
-          <p>Unlimited fibre internet is available throughout the apartment.</p>
+
+          <hr style="border:none;border-top:1px solid #e5e7eb;margin:10px 0 6px;" />
+
+          <div class="bullet-title">Wi-Fi details</div>
           <div class="wifi-grid">
             <div class="wifi-card">
-              <div class="wifi-label">Wi-Fi name (SSID)</div>
+              <div class="wifi-label">Network</div>
               <div class="wifi-value">
-                <code id="wifiName">Greystone_G2_5G</code>
+                <code id="wifiName">geetwo_G2</code>
                 <button class="btn-copy" data-copy-target="wifiName">Copy</button>
               </div>
             </div>
             <div class="wifi-card">
               <div class="wifi-label">Password</div>
               <div class="wifi-value">
-                <code id="wifiPassword">StayAtG2@2025</code>
+                <code id="wifiPassword">geetwo_2025</code>
                 <button class="btn-copy" data-copy-target="wifiPassword">Copy</button>
               </div>
             </div>
           </div>
+
+          <hr style="border:none;border-top:1px solid #e5e7eb;margin:10px 0 6px;" />
+
+          <div class="two-col-list">
+            <div>
+              <div class="bullet-title">Check-in</div>
+              <p>Standard check-in time is <b>2:00 PM</b>.</p>
+            </div>
+            <div>
+              <div class="bullet-title">Check-out</div>
+              <p>Standard check-out time is <b>11:00 AM</b>.</p>
+            </div>
+          </div>
+
+          <div class="bullet-title" style="margin-top:8px;">House rules</div>
           <ul class="list">
-            <li>Best speed near the living room and workspace desk.</li>
-            <li>Please avoid very heavy downloads during important calls.</li>
-          </ul>
-        `,
-      },
-      {
-        id: "houseRules",
-        title: "House rules",
-        tag: "Please read",
-        icon: "📜",
-        updated: "2025-10-20",
-        keywords: "rules smoking visitors noise quiet hours",
-        html: `
-          <ul class="list">
-            <li><b>No smoking</b> inside. You may use the balcony with the door closed.</li>
-            <li>No parties or events — this is a quiet residential building.</li>
-            <li>Quiet hours: <b>10:00 PM – 7:00 AM</b>.</li>
-            <li>Only registered guests may stay overnight.</li>
-            <li>Please report any damage immediately so we can repair quickly.</li>
+            <li>No smoking inside the apartment.</li>
+            <li>Kindly keep noise to a minimum after <b>10:00 PM</b>.</li>
+            <li>Please switch off lights, AC, and appliances when not in use.</li>
+            <li>Handle items and furniture with care — treat it like your own home.</li>
           </ul>
         `,
       },
@@ -871,7 +964,7 @@
             <li>Check-out time is <b>11:00 AM</b> unless we agreed otherwise.</li>
             <li>Wash dishes or start a quick dishwasher cycle if available.</li>
             <li>Place used towels in the laundry basket.</li>
-            <li>Switch off ACs, lights, TV and water heater.</li>
+            <li>Switch off lights, ACs, TV and water heater.</li>
             <li>Lock the door and scramble the smart-lock digits.</li>
           </ol>
           <p>Please send a quick message when you leave so we can schedule cleaning.</p>
@@ -894,6 +987,41 @@
         `,
       },
       {
+        id: "wine",
+        title: "In-house wine cellar",
+        tag: "Order a bottle",
+        icon: "🍷",
+        updated: "2025-10-20",
+        keywords: "wine cellar inhouse drinks bottle prices red white sparkling",
+        html: `
+          <p>
+            We offer a small curated in-house wine selection. Prices are per bottle
+            and can be charged to your stay. Message your host with the wine name
+            and quantity to place an order.
+          </p>
+          <div class="two-col-list">
+            <div>
+              <div class="bullet-title">Red wines</div>
+              <p><b>Greystone House Red</b> – ₦18,000<br/>
+                 <span style="color:#6b7280;font-size:11px;">Smooth, medium-bodied, great with pasta & grills.</span></p>
+              <p><b>Cabernet Sauvignon Reserve</b> – ₦26,000<br/>
+                 <span style="color:#6b7280;font-size:11px;">Richer profile, dark fruit & oak.</span></p>
+            </div>
+            <div>
+              <div class="bullet-title">White & sparkling</div>
+              <p><b>Chardonnay</b> – ₦20,000<br/>
+                 <span style="color:#6b7280;font-size:11px;">Fresh, lightly oaked, ideal with seafood.</span></p>
+              <p><b>Prosecco Brut</b> – ₦24,000<br/>
+                 <span style="color:#6b7280;font-size:11px;">Crisp sparkling, perfect for celebrations.</span></p>
+            </div>
+          </div>
+          <p style="margin-top:6px;font-size:12px;color:#6b7280;">
+            Subject to availability. If your preferred style isn’t listed, let us know —
+            we may be able to source it in advance of your stay.
+          </p>
+        `,
+      },
+      {
         id: "safety",
         title: "Safety & emergency",
         tag: "Important",
@@ -909,9 +1037,147 @@
           </ul>
         `,
       },
+      {
+        id: "feedback",
+        title: "Leave feedback",
+        tag: "Help us improve",
+        icon: "💬",
+        updated: "2025-10-20",
+        keywords: "feedback review rating comments email",
+        html: `
+          <p>
+            We’d love to hear how your stay is going. Your feedback helps us keep
+            Greystone G2 feeling fresh and comfortable for every guest.
+          </p>
+          <form
+            class="feedback-form"
+            id="feedbackForm"
+            action="mailto:greystoneapartmentg2@gmail.com"
+            method="POST"
+            enctype="text/plain"
+          >
+            <div class="feedback-row">
+              <label for="fbName">Name (optional)</label>
+              <input id="fbName" name="Name" type="text" placeholder="Your name" />
+            </div>
+            <div class="feedback-row">
+              <label for="fbEmail">Email (optional)</label>
+              <input id="fbEmail" name="Email" type="email" placeholder="you@example.com" />
+            </div>
+            <div class="feedback-row">
+              <label for="fbRating">Overall rating</label>
+              <select id="fbRating" name="Rating">
+                <option value="5">⭐⭐⭐⭐⭐ Excellent</option>
+                <option value="4">⭐⭐⭐⭐ Very good</option>
+                <option value="3">⭐⭐⭐ Good</option>
+                <option value="2">⭐⭐ Needs improvement</option>
+                <option value="1">⭐ Poor</option>
+              </select>
+            </div>
+            <div class="feedback-row">
+              <label for="fbMessage">Comments</label>
+              <textarea
+                id="fbMessage"
+                name="Comments"
+                placeholder="What did you enjoy? Anything we can improve?"
+                required
+              ></textarea>
+            </div>
+            <button type="submit" class="btn-primary">Send feedback</button>
+            <div class="feedback-note">
+              Submitting will open your email app with the message ready to send to
+              <b>greystoneapartmentg2@gmail.com</b>.
+            </div>
+          </form>
+        `,
+      },
     ];
 
-    // Simple embed links that should render without API key
+    /* -------- NEARBY RECOMMENDATIONS (RIGHT PANEL) -------- */
+
+    const RECOMMENDATIONS = {
+      food: [
+        {
+          name: "Ocean View Bistro",
+          type: "Modern Nigerian & continental",
+          eta: "5–7 min drive",
+          rating: "4.6",
+          price: "₦₦",
+          maps:
+            "https://www.google.com/maps/search/?api=1&query=Ocean+View+Bistro+Victoria+Island+Lagos",
+        },
+        {
+          name: "VI Corner Café",
+          type: "Coffee, quick bites, light lunch",
+          eta: "10–12 min walk",
+          rating: "4.4",
+          price: "₦₦",
+          maps:
+            "https://www.google.com/maps/search/?api=1&query=VI+Corner+Cafe+Victoria+Island+Lagos",
+        },
+      ],
+      bars: [
+        {
+          name: "Skyline Lounge",
+          type: "Rooftop bar & small plates",
+          eta: "8–10 min drive",
+          rating: "4.5",
+          price: "₦₦₦",
+          maps:
+            "https://www.google.com/maps/search/?api=1&query=Skyline+Lounge+Victoria+Island+Lagos",
+        },
+        {
+          name: "VI Social Club",
+          type: "Cocktails & music",
+          eta: "6–8 min drive",
+          rating: "4.3",
+          price: "₦₦₦",
+          maps:
+            "https://www.google.com/maps/search/?api=1&query=VI+Social+Club+Lagos",
+        },
+      ],
+      activities: [
+        {
+          name: "Tarkwa Bay (via jetty)",
+          type: "Beach & water activities",
+          eta: "20–30 min (jetty + boat)",
+          rating: "4.5",
+          price: "₦₦",
+          maps:
+            "https://www.google.com/maps/search/?api=1&query=Tarkwa+Bay+Lagos",
+        },
+        {
+          name: "Nike Art Gallery",
+          type: "Art, culture & shopping",
+          eta: "15–20 min drive",
+          rating: "4.7",
+          price: "₦₦",
+          maps:
+            "https://www.google.com/maps/search/?api=1&query=Nike+Art+Gallery+Lagos",
+        },
+      ],
+      travel: [
+        {
+          name: "VI Travel Hub",
+          type: "Tours & airport transfers",
+          eta: "5–10 min drive",
+          rating: "4.4",
+          price: "₦₦₦",
+          maps:
+            "https://www.google.com/maps/search/?api=1&query=Travel+agency+Victoria+Island+Lagos",
+        },
+        {
+          name: "Island Tours & Safaris",
+          type: "City tours & day trips",
+          eta: "10–15 min drive",
+          rating: "4.2",
+          price: "₦₦₦",
+          maps:
+            "https://www.google.com/maps/search/?api=1&query=Island+Tours+Lagos",
+        },
+      ],
+    };
+
     const MAP_URLS = {
       food:
         "https://www.google.com/maps?q=restaurants+near+Victoria+Island+Lagos&output=embed",
@@ -923,6 +1189,8 @@
         "https://www.google.com/maps?q=travel+agencies+near+Victoria+Island+Lagos&output=embed",
     };
 
+    /* -------- DOM HOOKS -------- */
+
     const mainTabs = document.getElementById("mainTabs");
     const panelIcon = document.getElementById("panelIcon");
     const panelTitle = document.getElementById("panelTitle");
@@ -932,8 +1200,11 @@
     const searchInput = document.getElementById("searchInput");
     const mapTabs = document.getElementById("mapTabs");
     const mapFrame = document.getElementById("mapFrame");
+    const recList = document.getElementById("recList");
 
     let activeSectionId = "welcome";
+
+    /* -------- LEFT PANEL RENDERING -------- */
 
     function renderMainTabs() {
       mainTabs.innerHTML = "";
@@ -979,6 +1250,7 @@
       panelUpdated.textContent = "Last updated: " + section.updated;
 
       attachCopyButtons();
+      attachFeedbackHandler();
     }
 
     function attachCopyButtons() {
@@ -1000,15 +1272,65 @@
       });
     }
 
+    // Small UX improvement: show a toast-like alert on feedback submit
+    function attachFeedbackHandler() {
+      const form = document.getElementById("feedbackForm");
+      if (!form) return;
+      form.onsubmit = () => {
+        alert(
+          "Thank you! Your email app will open next so you can send your feedback to Greystone G2."
+        );
+        // Let the browser continue with the mailto: action
+      };
+    }
+
     searchInput.addEventListener("input", () => {
       renderActiveSection();
     });
+
+    /* -------- RIGHT PANEL (RECOMMENDATIONS + MAP) -------- */
+
+    function renderRecList(type) {
+      const items = RECOMMENDATIONS[type] || [];
+      recList.innerHTML = "";
+
+      if (!items.length) {
+        recList.innerHTML =
+          '<div style="font-size:12px;color:#6b7280;">No recommendations yet for this category.</div>';
+        return;
+      }
+
+      items.forEach((item) => {
+        const card = document.createElement("div");
+        card.className = "rec-card";
+        card.innerHTML = `
+          <div>
+            <div class="rec-name">${item.name}</div>
+            <div class="rec-meta">
+              <span>${item.type}</span>
+            </div>
+          </div>
+          <div class="rec-action">
+            <div class="rec-meta">
+              <span>⏱ ${item.eta}</span>
+              <span>⭐ ${item.rating}</span>
+              <span>${item.price}</span>
+            </div>
+            <a class="btn-small-link" href="${item.maps}" target="_blank" rel="noopener noreferrer">
+              Open in Maps →
+            </a>
+          </div>
+        `;
+        recList.appendChild(card);
+      });
+    }
 
     function setMapType(type) {
       document.querySelectorAll(".map-pill").forEach((pill) => {
         pill.classList.toggle("active", pill.dataset.type === type);
       });
       mapFrame.src = MAP_URLS[type] || MAP_URLS.food;
+      renderRecList(type);
     }
 
     mapTabs.querySelectorAll(".map-pill").forEach((pill) => {
@@ -1016,6 +1338,8 @@
         setMapType(pill.dataset.type);
       });
     });
+
+    /* -------- INIT -------- */
 
     renderMainTabs();
     renderActiveSection();
